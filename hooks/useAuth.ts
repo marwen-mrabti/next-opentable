@@ -30,7 +30,7 @@ const useAuth = () => {
   }) => {
     setAuth({ loading: true, data: null, error: null });
     try {
-      const { data } = await axios.post(`api/auth/signin`, {
+      const { data } = await axios.post(`/api/auth/signin`, {
         email,
         password,
       });
@@ -48,7 +48,7 @@ const useAuth = () => {
   const signup = async (userInputs: UserInputs) => {
     setAuth({ loading: true, data: null, error: null });
     try {
-      const { data } = await axios.post(`api/auth/signup`, {
+      const { data } = await axios.post(`/api/auth/signup`, {
         ...userInputs,
       });
 
@@ -70,7 +70,7 @@ const useAuth = () => {
         return setAuth({ loading: false, data: null, error: null });
       }
 
-      const { data } = await axios.get(`api/auth/me`, {
+      const { data } = await axios.get(`/api/auth/me`, {
         headers: {
           Authorization: `Bearer ${jwt}`,
         },
