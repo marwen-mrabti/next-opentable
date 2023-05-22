@@ -4,13 +4,6 @@ import Navbar from "@/app/components/Navbar";
 
 import { RecoilRoot } from "recoil";
 
-export const metadata = {
-  title: "next-OpenTable",
-  description:
-    "next-openTable where you can find restaurants, reserve tables, and order food online from the best restaurants in the world.",
-  image: "/logo.svg",
-};
-
 export default function RootLayout({
   children,
 }: {
