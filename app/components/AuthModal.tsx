@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import AuthModalInputs from "./AuthModalInputs";
+
+import useAuth from "@/hooks/useAuth";
+import { useRecoilState } from "recoil";
+import { authState } from "../store/atoms";
+import { Alert } from "@mui/material";
 
 const style = {
   position: "absolute" as "absolute",
@@ -18,7 +23,6 @@ const style = {
 
 export default function AuthModal({ isSignIn }: { isSignIn: boolean }) {
   const [open, setOpen] = useState(false);
-
   const [inputs, setInputs] = useState({
     firstName: "",
     lastName: "",
@@ -27,15 +31,63 @@ export default function AuthModal({ isSignIn }: { isSignIn: boolean }) {
     city: "",
     password: "",
   });
+  const [disabled, setDisabled] = useState(true);
+  const { signin, signup } = useAuth();
+  const [auth, setAuth] = useRecoilState<{
+    loading: boolean;
+    data: any;
+    error: any;
+  }>(authState);
+
+  useEffect(() => {
+    if (isSignIn) {
+      if (inputs.email && inputs.password) {
+        return setDisabled(false);
+      }
+    } else {
+      if (Object.values(inputs).every((value) => !!value)) {
+        return setDisabled(false);
+      }
+    }
+    setDisabled(true);
+  }, [inputs]);
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setAuth({ loading: false, data: null, error: null });
+    setInputs({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      city: "",
+      password: "",
+    });
+  };
+
   const renderContent = (signInContent: string, signUpContent: string) => {
     return isSignIn ? signInContent : signUpContent;
   };
 
   const handleInputsOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputs({ ...inputs, [e.target.id]: e.target.value });
+    setAuth({ loading: false, data: null, error: null });
+  };
+
+  const handleOnAuth = async () => {
+    setDisabled(true);
+
+    if (isSignIn) {
+      await signin({
+        email: inputs.email,
+        password: inputs.password,
+      });
+      setDisabled(false);
+    } else {
+      await signup(inputs);
+      setDisabled(false);
+    }
   };
 
   return (
@@ -51,6 +103,7 @@ export default function AuthModal({ isSignIn }: { isSignIn: boolean }) {
       >
         {renderContent("Sign In", "Sign Up")}
       </button>
+
       <Modal
         open={open}
         onClose={handleClose}
@@ -65,12 +118,16 @@ export default function AuthModal({ isSignIn }: { isSignIn: boolean }) {
               </p>
             </div>
             <div className="m-auto">
-              <h2 className="text-center text-2xl font-normal ">
-                {renderContent(
-                  "Log Into Your Account",
-                  "Create Your OpenTable Account"
-                )}
-              </h2>
+              {!auth.error ? (
+                <h2 className="text-center text-2xl font-normal ">
+                  {renderContent(
+                    "Log Into Your Account",
+                    "Create Your OpenTable Account"
+                  )}
+                </h2>
+              ) : (
+                <Alert severity="error">{auth.error}</Alert>
+              )}
 
               <AuthModalInputs
                 isSignIn={isSignIn}
@@ -78,11 +135,25 @@ export default function AuthModal({ isSignIn }: { isSignIn: boolean }) {
                 handleInputsOnChange={handleInputsOnChange}
               />
               <button
-                className="mb-5 w-full rounded bg-red-600 p-3 text-sm uppercase text-white disabled:bg-gray-400"
-                // disabled={true}
-                onClick={() => console.log(inputs)}
+                className={`mb-5 flex  h-10 w-full items-center justify-center rounded p-3 text-sm font-semibold uppercase disabled:bg-gray-400 ${
+                  !auth.loading
+                    ? "bg-red-600 text-white"
+                    : "bg-gray-300 text-slate-800"
+                }`}
+                disabled={disabled}
+                onClick={handleOnAuth}
               >
-                {renderContent("Sign In", "Create an account")}
+                {auth.loading ? (
+                  <>
+                    <svg
+                      className="mr-3 h-8 w-8 animate-spin rounded-full border-b-2 border-t-2  border-cyan-500"
+                      viewBox="0 0 24 24"
+                    ></svg>
+                    Processing...
+                  </>
+                ) : (
+                  renderContent("Sign In", "Create an account")
+                )}
               </button>
             </div>
           </div>

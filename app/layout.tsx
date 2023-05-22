@@ -1,7 +1,8 @@
+"use client";
 import "@/styles/globals.css";
 import Navbar from "@/app/components/Navbar";
 
-
+import { RecoilRoot } from "recoil";
 
 export const metadata = {
   title: "next-OpenTable",
@@ -20,10 +21,12 @@ export default function RootLayout({
       <body
         className={`max-w-screen min-h-screen scroll-smooth bg-gray-100 2xl:mx-auto 2xl:max-w-screen-2xl  `}
       >
-        <div className="m-auto flex  flex-col items-center  bg-white">
-          <Navbar />
-          {children}
-        </div>
+        <RecoilRoot>
+          <div className="m-auto flex  flex-col items-center  bg-white">
+            <Navbar />
+            {children}
+          </div>
+        </RecoilRoot>
       </body>
     </html>
   );
