@@ -30,13 +30,10 @@ const useAuth = () => {
   }) => {
     setAuth({ loading: true, data: null, error: null });
     try {
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_HOST}/api/auth/signin`,
-        {
-          email,
-          password,
-        }
-      );
+      const { data } = await axios.post(`api/auth/signin`, {
+        email,
+        password,
+      });
 
       setAuth({ loading: false, data, error: null });
     } catch (error: any) {
@@ -73,14 +70,11 @@ const useAuth = () => {
         return setAuth({ loading: false, data: null, error: null });
       }
 
-      const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_HOST}/api/auth/me`,
-        {
-          headers: {
-            Authorization: `Bearer ${jwt}`,
-          },
-        }
-      );
+      const { data } = await axios.get(`api/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
       setAuth({ loading: false, data, error: null });
