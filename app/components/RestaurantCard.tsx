@@ -20,7 +20,7 @@ interface Props {
 
 const RestaurantCard = ({ restaurant }: Props) => {
   return (
-    <div className="m-3 h-72 w-64 cursor-pointer overflow-hidden rounded border bg-white shadow-md">
+    <div className="m-3 h-72 w-64 cursor-pointer overflow-hidden rounded border bg-white text-stone-800 shadow-md">
       <Link href={`/restaurant/${restaurant.slug}`}>
         <Image
           src={restaurant.main_image}
