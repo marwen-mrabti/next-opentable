@@ -18,7 +18,7 @@
 
 @layer base {
   body {
-    color: rgb(var(--foreground-rgb));
+    color: #292524;
     background: linear-gradient(
         to bottom,
         transparent,
